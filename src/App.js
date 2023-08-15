@@ -1,21 +1,22 @@
 import { Provider } from "react-redux";
-import store from "./store";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import store from "./store";
 import FilmsList from "./features/FilmsList/FilmsList";
 import FilmDetails from "./features/FilmDetails/FilmDetails";
-import Header from "./features/Header/Header";
-import { Switch } from "@mui/material";
+import { theme } from "./theme";
+import { ThemeProvider } from "@emotion/react";
 
 function App() {
   return (
     <Provider store={store}>
-      <BrowserRouter>
-        <Header />
-        <Routes>
-          <Route path="/" element={<FilmsList />} />
-          <Route path="/details/" element={<FilmDetails />} />
-        </Routes>
-      </BrowserRouter>
+      <ThemeProvider theme={theme}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<FilmsList />} />
+            <Route path="/films/:id" element={<FilmDetails />} />
+          </Routes>
+        </BrowserRouter>
+      </ThemeProvider>
     </Provider>
   );
 }
