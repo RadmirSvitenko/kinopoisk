@@ -1,27 +1,35 @@
+import { Clear, Search } from "@mui/icons-material";
 import {
   AppBar,
-  Button,
-  Grid,
   Box,
   Toolbar,
   Typography,
   TextField,
+  InputAdornment,
+  alpha,
+  IconButton,
 } from "@mui/material";
-import axios from "axios";
+import { theme } from "../../theme";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import API from "../../requester";
-import { Search } from "@mui/icons-material";
-import { ThemeProvider } from "@emotion/react";
+import { useDispatch } from "react-redux";
+import { getFilms, getFilmsBySearch } from "../FilmsList/filmsListSlice";
 
 const Header = () => {
-  const [input, setInput] = useState("");
+  const [search, setSearch] = useState();
+  const dispatch = useDispatch();
 
-  const seatchFilmsWithCatalog = (event) => {
-    setInput(event.target.value);
+  const handleSearchChange = (event) => {
+    setSearch(event.target.value);
   };
 
-  const clearFilmsWithCatalog = () => {};
+  const handleClearChange = () => {
+    dispatch(getFilms());
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    dispatch(getFilmsBySearch(search));
+  };
 
   return (
     <AppBar
@@ -49,30 +57,54 @@ const Header = () => {
         </Box>
         <Box
           sx={{
+            position: "relative",
             display: "flex",
-            justifyContent: "space-evenly",
+            justifyContent: "space-between",
             alignItems: "center",
-            width: "600px",
+            width: "100%",
           }}
         >
-          <TextField
-            color={"secondary"}
-            sx={{
-              borderColor: "1px solid primary",
-              "& .MuiInputBase-root": {
-                color: "secondary.main",
-              },
-            }}
-            id="outlined-basic"
-            label="Outlined"
-            variant="outlined"
-          />
-          <Button variant="contained" color="secondary">
-            Searh
-          </Button>
-          <Button variant="outlined" color="secondary">
-            Clear
-          </Button>
+          <form onSubmit={handleSubmit}>
+            <TextField
+              value={search}
+              onChange={handleSearchChange}
+              color={"secondary"}
+              sx={{
+                position: "absolute",
+                transform: "translate(-50%, -50%)",
+                left: "45%",
+                top: "50%",
+                backgroundColor: alpha(theme.palette.common.white, 0.15),
+                borderColor: "1px solid primary",
+                "& .MuiInputBase-root": {
+                  color: "secondary.main",
+                  "&:hover": {
+                    backgroundColor: alpha(theme.palette.common.white, 0.2),
+                    transition: "0.8s",
+                  },
+                },
+              }}
+              id="outlined-basic"
+              label="Поиск по каталогу"
+              variant="outlined"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment>
+                    <IconButton type="submit">
+                      <Search color="secondary" />
+                    </IconButton>
+                    <IconButton type="button" onClick={handleClearChange}>
+                      <Clear color="secondary" />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+                color: "secondary",
+                style: {
+                  border: "1px solid orange",
+                },
+              }}
+            />
+          </form>
         </Box>
       </Toolbar>
     </AppBar>
@@ -80,29 +112,3 @@ const Header = () => {
 };
 
 export default Header;
-
-/* 
-
-  const getProducts = async () => {
-    const response = await fetch("https://dummyjson.com/products");
-    const data = await response.json();
-    console.log(data);
-    setProducts(data.products);
-  };
-
-  const searchProduct = document.getElementById("search_product");
-
-  const searchProductsCatalog = async (event) => {
-    event.preventDefault();
-    const response = await fetch(
-      "https://dummyjson.com/products/search?q=" + searchProduct.value
-    );
-    const { products } = await response.json();
-    setProducts(products);
-  };
-
-  const clearProductsCatalog = () => {
-    searchProduct.value = "";
-    getProducts();
-  };
-*/

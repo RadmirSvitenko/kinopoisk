@@ -37,7 +37,6 @@ const filmsDetailsSlice = createSlice({
     builder.addCase(getFilmDetails.fulfilled, (state, action) => {
       state.isLoading = false;
       state.details = action.payload;
-      state.radmir = action.payload;
     });
     builder.addCase(getFilmDetails.rejected, (state, action) => {
       state.error = action.error;

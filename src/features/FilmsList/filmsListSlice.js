@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import API from "../../requester";
+import { getFilmsAPI, getFilmsBySearchAPI } from "./filmsListAPI";
 
 const initialState = {
   list: [],
@@ -7,12 +8,11 @@ const initialState = {
   error: {},
 };
 
-export const getFilms = createAsyncThunk("filmsList/getFilms", async () => {
-  const response = await API.get("api/v2.2/films/top", {
-    params: { type: "TOP_100_POPULAR_FILMS" },
-  });
-  return response.data;
-});
+export const getFilms = createAsyncThunk("filmsList/getFilms", getFilmsAPI);
+export const getFilmsBySearch = createAsyncThunk(
+  "filmsList/getFilmsBySearch",
+  getFilmsBySearchAPI
+);
 
 const filmsListSlice = createSlice({
   name: "filmsList",
@@ -30,6 +30,14 @@ const filmsListSlice = createSlice({
     builder.addCase(getFilms.rejected, (state, action) => {
       state.error = action.error;
       state.isLoading = false;
+    });
+
+    builder.addCase(getFilmsBySearch.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(getFilmsBySearch.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.list = action.payload.films;
     });
   },
 });

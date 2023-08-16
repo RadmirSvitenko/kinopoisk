@@ -7,7 +7,8 @@ import Header from "../Header/Header";
 import theme from "../../theme";
 
 const FilmsList = () => {
-  const list = useSelector((state) => state.filmsList.list);
+  const filmList = useSelector((state) => state.filmsList.list);
+  const list = filmList;
   console.log("list: ", list);
 
   const isLoading = useSelector((state) => state.filmsList.isLoading);
