@@ -8,12 +8,6 @@ const API = axios.create({
   baseURL: "https://kinopoiskapiunofficial.tech/",
 });
 
-const OLD_API = axios.create({
-  baseURL: "https://kinopoiskapiunofficial.tech/api/v2.1/films",
-});
-
 API.defaults.headers["X-API-KEY"] = API_KEY;
-
-OLD_API.defaults.headers["X-API-KEY"] = API_KEY;
 
 export default API;

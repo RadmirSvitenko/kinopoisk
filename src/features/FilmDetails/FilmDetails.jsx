@@ -1,28 +1,31 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { getFilmDetails } from "./filmDetailsSlice";
+import { getFilmDetails, getMovieById } from "./filmDetailsSlice";
 import { Box, CircularProgress, Paper, Typography } from "@mui/material";
 import { Grid, Card, CardMedia } from "@mui/material";
-import theme from "../../theme";
 
 const FilmDetails = () => {
-  const details = useSelector((state) => state.filmDetails.details);
-  console.log("details: ", details);
-
   const params = useParams();
-  console.log("params: ", params);
   const dispatch = useDispatch();
 
-  const isLoading = useSelector((state) => state.filmsList.isLoading);
+  const details = useSelector((state) => state.filmDetails.details);
+  console.log("details: ", details);
+  const movieDetails = useSelector((state) => state.filmDetails.movieDetails);
+  console.log("movieDetails: ", movieDetails);
+  const isLoading = useSelector((state) => state.filmDetails.isLoading);
+  console.log("isLoading: ", isLoading);
 
-  const lastSync = details.lastSync;
-  const сutLastSync = String(lastSync).substring(0, 10);
-  console.log("lastSync: ", lastSync);
+  const [isMovie, setIsMovie] = useState(false);
 
   useEffect(() => {
     dispatch(getFilmDetails(params.id));
   }, [dispatch, params.id]);
+
+  const handleMovie = async () => {
+    await dispatch(getMovieById(details.kinopoiskId));
+    setIsMovie(true);
+  };
 
   if (isLoading) {
     return (
@@ -46,6 +49,8 @@ const FilmDetails = () => {
       alignItems={"center"}
       padding={"40px"}
       width={"100%"}
+      flexWrap={"wrap"}
+      height={"auto"}
       sx={{
         background: "rgb(16, 14, 25)",
         boxShadow: "0px 42px 31px 0px rgba(255, 0, 0, 0.43) inset",
@@ -92,8 +97,8 @@ const FilmDetails = () => {
       </Grid>
       <Grid
         sx={{
-          width: "500px",
-          height: "600px",
+          width: "40%",
+          height: "auto",
         }}
       >
         <Paper
@@ -116,23 +121,30 @@ const FilmDetails = () => {
             <Typography letterSpacing={"4px"} variant="h3" fontFamily>
               {details.nameRu}
             </Typography>
-            <Typography letterSpacing={"4px"} variant="h3">
+            <Typography color={"primary"} letterSpacing={"4px"} variant="h4">
               {details.nameOriginal}
             </Typography>
           </Box>
 
-          {/* <Box marginBottom={"30px"}>
+          <Box textAlign={"center"} marginBottom={"30px"}>
+            <Typography>Жанры: </Typography>
+            <br />
             {details.genres?.map((item) => (
               <div>
-                <Typography key={item.kinopoiskId}>{item}</Typography>
+                <Typography key={item.genre}>{item.genre}</Typography>
               </div>
             ))}
+          </Box>
+
+          <Box textAlign={"center"} marginBottom={"30px"}>
+            <Typography>Страна производитель: </Typography>
+            <br />
             {details.countries?.map((item) => (
               <div>
-                <Typography key={item.kinopoiskId}>{item}</Typography>
+                <Typography key={item.country}>{item.country}</Typography>
               </div>
             ))}
-          </Box> */}
+          </Box>
 
           <Box marginBottom={"30px"}>
             <Typography>
@@ -145,7 +157,9 @@ const FilmDetails = () => {
           </Box>
 
           <Box marginBottom={"30px"}>
-            <Typography>Добавлен: {сutLastSync}</Typography>
+            <Typography>
+              Добавлен: {details.lastSync.substring(0, 10)}
+            </Typography>
             <Typography>Год выпуска: {details.year}</Typography>
             <Typography>
               Продолжительность фильма: {details.filmLength} минут
@@ -159,43 +173,16 @@ const FilmDetails = () => {
             <br />
             <Typography>{details.description}</Typography>
           </Box>
-
-          {/* <table>
-            <tr>
-              <th>Название фильма: </th>
-              <th>{details.nameRu}</th>
-            </tr>
-            <tr>
-              <th>Оригинальное название: </th>
-              <th>{details.nameOriginal}</th>
-            </tr>
-            <tr>
-              <th>Количество просмотров: </th>
-              <th>{details.ratingAwaitCount}</th>
-            </tr>
-            <tr>
-              <th>Количество голосов на KINOPOISK.RU: </th>
-              <th>{details.ratingKinopoiskVoteCount}</th>
-            </tr>
-            <tr>
-              <th>Страна выпуска: </th>
-              <th>{details.nameRu}</th>
-            </tr>
-            <tr>
-              <th>Добавлен: </th>
-              <th>{lastSync}</th>
-            </tr>
-            <tr>
-              <th>Год выпуска: </th>
-              <th>{details.year}</th>
-            </tr>
-            <tr>
-              <th>Продолжительность фильма: </th>
-              <th>{details.filmLength} мин.</th>
-            </tr>
-          </table> */}
         </Paper>
       </Grid>
+      <Box width={"100%"}>
+        <button onClick={handleMovie}>Получить фильм</button>
+        {isMovie ? (
+          <div>{movieDetails.items[0].url}</div>
+        ) : (
+          console.log("Error!")
+        )}
+      </Box>
     </Grid>
   );
 };

@@ -1,10 +1,13 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { getMovieByIdAPI } from "./filmsDetailsAPI";
+
 import API from "../../requester";
 
 const initialState = {
   details: {},
+  movieDetails: {},
   radmir: {},
-  isLoading: false,
+  isLoading: true,
   error: {},
 };
 
@@ -12,11 +15,13 @@ export const getFilmDetails = createAsyncThunk(
   "filmDetals/getFilm",
   async (id) => {
     const response = await API.get(`api/v2.2/films/${id}`);
-    // {
-    //   params: { type: "TOP_100_POPULAR_FILMS" },
-    // });
     return response.data;
   }
+);
+
+export const getMovieById = createAsyncThunk(
+  "filmDetals/getMovie",
+  getMovieByIdAPI
 );
 
 const filmsDetailsSlice = createSlice({
@@ -41,6 +46,15 @@ const filmsDetailsSlice = createSlice({
     builder.addCase(getFilmDetails.rejected, (state, action) => {
       state.error = action.error;
       state.isLoading = false;
+    });
+
+    builder.addCase(getMovieById.pending, (state) => {
+      state.isLoading = true;
+    });
+
+    builder.addCase(getMovieById.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.movieDetails = action.payload;
     });
   },
 });
